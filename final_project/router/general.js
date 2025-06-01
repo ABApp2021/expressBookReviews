@@ -44,6 +44,32 @@ public_users.get('/', async (req, res) => {
     }
 });
 
+// Async route to get book details by ISBN
+public_users.get('/isbn/:isbn', async (req, res) => {
+    const isbn = req.params.isbn;
+
+    try {
+        const getBookByISBN = () => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    const book = books[isbn];
+                    if (book) {
+                        resolve(book);
+                    } else {
+                        reject("Book not found");
+                    }
+                }, 1000); // simulate 1s delay
+            });
+        };
+
+        const bookDetails = await getBookByISBN();
+        res.status(200).json(bookDetails);
+    } catch (error) {
+        res.status(404).json({ message: error });
+    }
+});
+
+
 // Async route to get books by author
 public_users.get('/author/:author', async (req, res) => {
     const author = req.params.author;
