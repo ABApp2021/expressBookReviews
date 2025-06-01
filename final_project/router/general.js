@@ -25,8 +25,86 @@ public_users.post("/register", (req,res) => {
     return res.status(404).json({message: "Unable to register user."});
   return res.status(300).json({message: "Yet to be implemented"});
 });
+// Async route to get books
+public_users.get('/', async (req, res) => {
+    try {
+        // Simulating an async fetch of book data using a Promise
+        const getBooks = () => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    resolve(books);
+                }, 1000); // 1 second delay to simulate async
+            });
+        };
 
-// Get the book list available in the shop
+        const bookList = await getBooks();
+        res.status(200).json(bookList);
+    } catch (error) {
+        res.status(500).json({ message: "Error fetching books" });
+    }
+});
+
+// Async route to get books by author
+public_users.get('/author/:author', async (req, res) => {
+    const author = req.params.author;
+    try {
+        // Simulate asynchronous operation using Promise
+        const getBooksByAuthor = () => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    const matchedBooks = [];
+                    for (let isbn in books) {
+                        if (books[isbn].author === author) {
+                            matchedBooks.push({ isbn, ...books[isbn] });
+                        }
+                    }
+                    resolve(matchedBooks);
+                }, 1000); // simulate 1s delay
+            });
+        };
+
+        const booksByAuthor = await getBooksByAuthor();
+        if (booksByAuthor.length > 0) {
+            res.status(200).json(booksByAuthor);
+        } else {
+            res.status(404).json({ message: "No books found by this author" });
+        }
+    } catch (err) {
+        res.status(500).json({ message: "Error finding books" });
+    }
+});
+
+// Async route to get books by title
+public_users.get('/title/:title', async (req, res) => {
+    const title = req.params.title;
+
+    try {
+        // Simulated async operation using a Promise
+        const getBooksByTitle = () => {
+            return new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    const matchedBooks = [];
+                    for (let isbn in books) {
+                        if (books[isbn].title === title) {
+                            matchedBooks.push({ isbn, ...books[isbn] });
+                        }
+                    }
+                    resolve(matchedBooks);
+                }, 1000); // 1 second delay
+            });
+        };
+        const booksByTitle = await getBooksByTitle();
+        if (booksByTitle.length > 0) {
+            res.status(200).json(booksByTitle);
+        } else {
+            res.status(404).json({ message: "No books found with this title" });
+        }
+    } catch (error) {
+        res.status(500).json({ message: "Error retrieving books" });
+    }
+});
+
+/*{// Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
    res.send(JSON.stringify(books,null,4));
@@ -36,25 +114,65 @@ public_users.get('/',function (req, res) {
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const isbn = req.params.isbn;
+    res.send(books[isbn]);
+  //return res.status(300).json({message: "Yet to be implemented"});
  });
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    const author = req.params.author;
+    const matchingBooks = [];
+
+    // Loop through all books
+    for (let isbn in books) {
+        if (books[isbn].author === author) {
+            matchingBooks.push({ isbn, ...books[isbn] });
+        }
+    }
+
+    if (matchingBooks.length > 0) {
+        res.status(200).json(matchingBooks);
+    } else {
+        res.status(404).json({ message: "No books found by this author" });
+    }
+//  return res.status(300).json({message: "Yet to be implemented"});
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
-});
+      const title = req.params.title;
+    const matchingBooks = [];
+
+    // Loop through all books
+    for (let isbn in books) {
+        if (books[isbn].title === title) {
+            matchingBooks.push({ isbn, ...books[isbn] });
+        }
+    }
+
+    if (matchingBooks.length > 0) {
+        res.status(200).json(matchingBooks);
+    } else {
+        res.status(404).json({ message: "No books found by this author" });
+    }
+//  return res.status(300).json({message: "Yet to be implemented"});
+});}*/
 
 //  Get book review
 public_users.get('/review/:isbn',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+     const isbn = req.params.isbn;
+    const book = books[isbn];
+
+    if (book) {
+        res.status(200).json(book.reviews);
+    } else {
+        res.status(404).json({ message: "Book not found" });
+    }
+ // return res.status(300).json({message: "Yet to be implemented"});
 });
 
 module.exports.general = public_users;
